@@ -21,21 +21,24 @@ const myStyle = css`
 `;
 
 const Home: FC = () => {
-  const [result] = useQuery({
-    query: testQuery,
-  });
-  const { data, fetching, error } = result;
-  if (fetching) {
-    return <section>fetching</section>;
-  }
-  if (error) {
-    return <section>error</section>;
-  }
+  // const [result] = useQuery({
+  //   query: testQuery,
+  // });
+  // const { data, fetching, error } = result;
+  // if (fetching) {
+  //   return <section>fetching</section>;
+  // }
+  // if (error) {
+  //   return <section>error</section>;
+  // }
 
   return (
     <section css={myStyle}>
       <h1>サンプル</h1>
-      <p>{data}</p>
+      <a href="/api/auth/login">Login</a>
+      <a href="/api/auth/logout">Logout</a>
+
+      {/* <p>{data}</p> */}
       <Button>Lets Start!!</Button>
     </section>
   );

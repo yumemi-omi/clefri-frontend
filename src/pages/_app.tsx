@@ -2,6 +2,7 @@ import { GlobalStyles } from '@/styles/Globals';
 import type { AppProps } from 'next/app';
 import { Provider } from 'urql';
 import { client, ssrCache } from '@/lib/urqlClient';
+import { UserProvider } from '@auth0/nextjs-auth0';
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   if (pageProps.urqlState) {
@@ -11,9 +12,11 @@ function MyApp({ Component, pageProps }: AppProps): JSX.Element {
   return (
     <>
       <GlobalStyles />
-      <Provider value={client}>
-        <Component {...pageProps} />
-      </Provider>
+      <UserProvider>
+        <Provider value={client}>
+          <Component {...pageProps} />
+        </Provider>
+      </UserProvider>
     </>
   );
 }
