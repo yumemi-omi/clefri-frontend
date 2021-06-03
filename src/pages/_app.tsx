@@ -1,12 +1,19 @@
 import { GlobalStyles } from '@/styles/Globals';
 import type { AppProps } from 'next/app';
-import React from 'react';
+import { Provider } from 'urql';
+import { client, ssrCache } from '@/lib/urqlClient';
 
 function MyApp({ Component, pageProps }: AppProps): JSX.Element {
+  if (pageProps.urqlState) {
+    ssrCache.restoreData(pageProps.urqlState);
+  }
+
   return (
     <>
       <GlobalStyles />
-      <Component {...pageProps} />
+      <Provider value={client}>
+        <Component {...pageProps} />
+      </Provider>
     </>
   );
 }

@@ -1,6 +1,18 @@
 import { FC } from 'react';
 import Button from '@/components/root/Button';
 import { css } from '@emotion/react';
+import { client, ssrCache } from '@/lib/urqlClient';
+import { useQuery } from 'urql';
+import { SSRData } from 'next-urql';
+
+const testQuery = `
+  query MyQuery {
+    user {
+      display_name
+      email
+    }
+  }
+`;
 
 const myStyle = css`
   color: hotpink;
@@ -9,18 +21,38 @@ const myStyle = css`
 `;
 
 const Home: FC = () => {
+  const [result] = useQuery({
+    query: testQuery,
+  });
+  const { data, fetching, error } = result;
+  if (fetching) {
+    return <section>fetching</section>;
+  }
+  if (error) {
+    return <section>error</section>;
+  }
+
   return (
     <section css={myStyle}>
       <h1>サンプル</h1>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda
-        blanditiis consequatur eius hic ipsam nostrum omnis optio! Doloribus
-        quaerat quis ratione? At, maiores voluptas? Eveniet odio omnis
-        repellendus sapiente voluptatibus.
-      </p>
+      <p>{data}</p>
       <Button>Lets Start!!</Button>
     </section>
   );
 };
+
+// export async function getServerSideProps(): Promise<{
+//   props: {
+//     urqlState: SSRData;
+//   };
+// }> {
+//   await client.query(testQuery).toPromise();
+//   return { props: { urqlState: ssrCache.extractData() } };
+// }
+
+// export async function getStaticProps() {
+//   await client.query(testQuery).toPromise();
+//   return { props: { urqlState: ssrCache.extractData() }, revalidate: 60 };
+// }
 
 export default Home;
