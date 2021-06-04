@@ -1,7 +1,7 @@
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 const Cook = withPageAuthRequired(
-  function cook({ user }) {
+  ({ user }) => {
     console.log({ user });
     return <div>cooking mode</div>;
   },
