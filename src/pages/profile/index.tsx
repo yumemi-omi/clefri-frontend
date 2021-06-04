@@ -1,11 +1,10 @@
-import { useUser } from '@auth0/nextjs-auth0';
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
 
-export default function Profile() {
+const Profile = (props) => {
   const { user, error, isLoading } = useUser();
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
-
+  console.log({ props });
   return (
     user && (
       <div>
@@ -15,4 +14,13 @@ export default function Profile() {
       </div>
     )
   );
-}
+};
+
+export const getServerSideProps = withPageAuthRequired({
+  // default is auth0 login page
+  returnTo: '/profile',
+  async getServerSideProps(ctx) {
+    return { props: { customProp: 'bar' } };
+  },
+});
+export default Profile;
