@@ -1,15 +1,17 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import Button from '@/components/root/Button';
 import { css } from '@emotion/react';
 import { client, ssrCache } from '@/lib/urqlClient';
 import { useQuery } from 'urql';
-import { SSRData } from 'next-urql';
+import auth0 from '@/lib/auth0';
+import gql from 'graphql-tag';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
-const testQuery = `
+const testQuery = gql`
   query MyQuery {
     user {
       display_name
-      email
+      user_name
     }
   }
 `;
@@ -20,17 +22,21 @@ const myStyle = css`
   font-weight: bold;
 `;
 
-const Home: FC = () => {
-  // const [result] = useQuery({
-  //   query: testQuery,
-  // });
-  // const { data, fetching, error } = result;
-  // if (fetching) {
-  //   return <section>fetching</section>;
-  // }
-  // if (error) {
-  //   return <section>error</section>;
-  // }
+const Home: FC = (props) => {
+  const [result] = useQuery({
+    query: testQuery,
+  });
+  console.log({ result });
+
+  // useEffect(() => {
+  //   const handleGetUserData = () => {
+  //     return fetch(`/api/token`).then((res) => {
+  //       console.log({ res });
+  //       return res.json();
+  //     });
+  //   };
+  //   handleGetUserData();
+  // }, []);
 
   return (
     <section css={myStyle}>
@@ -38,20 +44,35 @@ const Home: FC = () => {
       <a href="/api/auth/login">Login</a>
       <a href="/api/auth/logout">Logout</a>
 
-      {/* <p>{data}</p> */}
       <Button>Lets Start!!</Button>
     </section>
   );
 };
 
-// export async function getServerSideProps(): Promise<{
-//   props: {
-//     urqlState: SSRData;
-//   };
-// }> {
-//   await client.query(testQuery).toPromise();
-//   return { props: { urqlState: ssrCache.extractData() } };
-// }
+// export const getServerSideProps = withPageAuthRequired({
+//   returnTo: '/',
+//   async getServerSideProps({ req, res }) {
+//     const response = await fetch('http://localhost:3000/api/token');
+//     const { accessToken } = await response.json();
+//     console.log({ accessToken, response });
+
+//     const result = await auth0.getAccessToken(req, res);
+//     await client
+//       .query(testQuery, undefined, {
+//         fetchOptions: () => {
+//           return {
+//             headers: {
+//               authorization: result.accessToken
+//                 ? `Bearer ${result.accessToken}`
+//                 : '',
+//             },
+//           };
+//         },
+//       })
+//       .toPromise();
+//     return { props: { urqlState: ssrCache.extractData() } };
+//   },
+// });
 
 // export async function getStaticProps() {
 //   await client.query(testQuery).toPromise();

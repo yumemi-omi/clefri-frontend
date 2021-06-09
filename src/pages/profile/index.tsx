@@ -1,11 +1,10 @@
 import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
+import auth0 from '@/lib/auth0';
 
 const Profile: FC = (props) => {
-  const { user, error, isLoading } = useUser();
-  if (isLoading || !user) return <div>Loading...</div>;
-  if (error) return <div>{error.message}</div>;
-  console.log({ props });
+  const { user, error, isLoading, checkSession } = useUser();
+
   return (
     <div>
       <img src={user.picture} alt={user.name} />
@@ -16,10 +15,10 @@ const Profile: FC = (props) => {
 };
 
 export const getServerSideProps = withPageAuthRequired({
-  // default is auth0 login page
   returnTo: '/profile',
-  async getServerSideProps(ctx) {
-    return { props: { customProp: 'bar' } };
+  async getServerSideProps(_ctx) {
+    return { props: {} };
   },
 });
+
 export default Profile;
