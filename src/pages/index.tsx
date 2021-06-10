@@ -2,9 +2,8 @@ import { FC, useEffect } from 'react';
 import Button from '@/components/root/Button';
 import { css } from '@emotion/react';
 import { client, ssrCache } from '@/lib/urqlClient';
-import { useQuery } from 'urql';
+import { useQuery, gql } from 'urql';
 import auth0 from '@/lib/auth0';
-import gql from 'graphql-tag';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 const testQuery = gql`
