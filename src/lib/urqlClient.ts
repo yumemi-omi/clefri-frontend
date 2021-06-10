@@ -8,6 +8,7 @@ import {
   Operation,
 } from 'urql';
 import { authExchange } from '@urql/exchange-auth';
+import { devtoolsExchange } from '@urql/devtools';
 // import auth0 from '@/lib/auth0';
 
 const requestAccessToken = async (): Promise<string> => {
@@ -34,6 +35,7 @@ const client = createClient({
   // TODO: 環境変数で切り替え可能にする
   url: 'https://clefri-dev.hasura.app/v1/graphql',
   exchanges: [
+    devtoolsExchange,
     dedupExchange,
     cacheExchange,
     authExchange({
