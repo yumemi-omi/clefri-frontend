@@ -10,16 +10,18 @@ import {
 import { authExchange } from '@urql/exchange-auth';
 import { devtoolsExchange } from '@urql/devtools';
 // import auth0 from '@/lib/auth0';
+import { signOut, getSession } from 'next-auth/client';
 
 const requestAccessToken = async (): Promise<string> => {
   let accessToken;
   if (accessToken) return accessToken;
 
   // TODO: 環境変数で切り替え可能にする
-  const res = await fetch(`http://localhost:3000/api/token`);
+  const res = await fetch(`http://localhost:3000/api/auth/session`);
   if (res.ok) {
     const json = await res.json();
 
+    console.log({ json: json });
     return json.accessToken;
   } else {
     return 'public';
@@ -74,23 +76,33 @@ const client = createClient({
       //   // e.g. check for expiration, existence of auth etc
       //   return false;
       // },
-      // didAuthError: ({ error }) => {
-      //   // check if the error was an auth error (this can be implemented in various ways, e.g. 401 or a special error code)
-      //   return error.graphQLErrors.some(
-      //     (e) => e.extensions?.code === 'FORBIDDEN'
-      //   );
-      // },
+      /**
+       *
+       * If didAuthError returns true, it will trigger the exchange to trigger the logic for asking for re-authentication via getAuth.
+       */
+      didAuthError: ({ error }) => {
+        // implementation sample
+        // https://formidable.com/open-source/urql/docs/advanced/authentication/#configuring-didautherror
+        // error codes samplae
+        // https://www.apollographql.com/docs/apollo-server/data/errors/#codes
+        return error.graphQLErrors.some(
+          (e) => e.extensions?.code === 'FORBIDDEN'
+        );
+      },
       getAuth: async ({ authState, mutate }) => {
         if (isServerSide) return null;
+
         // for initial launch, fetch the auth state from storage (local storage, async storage etc)
-        // if (!authState) {
-        // const token = localStorage.getItem('token');
-        // // const refreshToken = localStorage.getItem('refreshToken');
-        // if (token && refreshToken) {
-        //   return { token, refreshToken };
-        // }
-        //   return null;
-        // }
+        if (!authState) {
+          const session = await getSession();
+          console.log({ session });
+          await requestAccessToken();
+          // const refreshToken = localStorage.getItem('refreshToken');
+          // if (token && refreshToken) {
+          //   return { token, refreshToken };
+          // }
+          return null;
+        }
 
         /**
          * the following code gets executed when an auth error has occurred
@@ -120,7 +132,7 @@ const client = createClient({
         // localStorage.clear();
 
         // your app logout logic should trigger here
-        // logout();
+        signOut();
 
         return null;
       },

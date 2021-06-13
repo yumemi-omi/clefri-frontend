@@ -1,24 +1,23 @@
 import { GlobalStyles } from '@/styles/Globals';
 import type { AppProps } from 'next/app';
-import { Provider } from 'urql';
-import { client, ssrCache } from '@/lib/urqlClient';
-import { UserProvider } from '@auth0/nextjs-auth0';
+import { ssrCache } from '@/lib/urqlClient';
 import { ReactElement } from 'react';
+import { Provider as AuthProvider } from 'next-auth/client';
+import UrqlProvider from '@/components/UrqlProvider';
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement<AppProps> {
   if (pageProps.urqlState) {
     ssrCache.restoreData(pageProps.urqlState);
   }
-  const { user } = pageProps;
 
   return (
     <>
       <GlobalStyles />
-      <UserProvider user={user}>
-        <Provider value={client}>
+      <AuthProvider session={pageProps.session}>
+        <UrqlProvider>
           <Component {...pageProps} />
-        </Provider>
-      </UserProvider>
+        </UrqlProvider>
+      </AuthProvider>
     </>
   );
 }
