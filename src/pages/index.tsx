@@ -1,10 +1,7 @@
-import { FC, useEffect } from 'react';
-import Button from '@/components/root/Button';
+import { FC } from 'react';
 import { css } from '@emotion/react';
-import { client, ssrCache } from '@/lib/urqlClient';
 import { useQuery, gql } from 'urql';
-import auth0 from '@/lib/auth0';
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const testQuery = gql`
   query MyQuery {
@@ -21,61 +18,22 @@ const myStyle = css`
   font-weight: bold;
 `;
 
-const Home: FC = (props) => {
+const Home: FC = () => {
+  const { loginWithRedirect, logout, user } = useAuth0();
   const [result] = useQuery({
     query: testQuery,
   });
-  console.log({ result });
-
-  // useEffect(() => {
-  //   const handleGetUserData = () => {
-  //     return fetch(`/api/token`).then((res) => {
-  //       console.log({ res });
-  //       return res.json();
-  //     });
-  //   };
-  //   handleGetUserData();
-  // }, []);
+  console.log({ result, user });
 
   return (
     <section css={myStyle}>
       <h1>サンプル</h1>
-      <a href="/api/auth/login">Login</a>
-      <a href="/api/auth/logout">Logout</a>
-
-      <Button>Lets Start!!</Button>
+      <button onClick={async () => await loginWithRedirect()}>Login</button>
+      <button onClick={() => logout({ returnTo: window.location.origin })}>
+        Logout
+      </button>
     </section>
   );
 };
-
-// export const getServerSideProps = withPageAuthRequired({
-//   returnTo: '/',
-//   async getServerSideProps({ req, res }) {
-//     const response = await fetch('http://localhost:3000/api/token');
-//     const { accessToken } = await response.json();
-//     console.log({ accessToken, response });
-
-//     const result = await auth0.getAccessToken(req, res);
-//     await client
-//       .query(testQuery, undefined, {
-//         fetchOptions: () => {
-//           return {
-//             headers: {
-//               authorization: result.accessToken
-//                 ? `Bearer ${result.accessToken}`
-//                 : '',
-//             },
-//           };
-//         },
-//       })
-//       .toPromise();
-//     return { props: { urqlState: ssrCache.extractData() } };
-//   },
-// });
-
-// export async function getStaticProps() {
-//   await client.query(testQuery).toPromise();
-//   return { props: { urqlState: ssrCache.extractData() }, revalidate: 60 };
-// }
 
 export default Home;

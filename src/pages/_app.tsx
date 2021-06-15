@@ -1,24 +1,27 @@
 import { GlobalStyles } from '@/styles/Globals';
 import type { AppProps } from 'next/app';
-import { Provider } from 'urql';
-import { client, ssrCache } from '@/lib/urqlClient';
-import { UserProvider } from '@auth0/nextjs-auth0';
 import { ReactElement } from 'react';
+import { AppState, Auth0Provider } from '@auth0/auth0-react';
+import Router from 'next/router';
+import UrqlProviders from '@/providers/UrqlProviders';
+import { getConfig } from '@/lib/auth0Config';
+
+const auth0Config = getConfig();
+
+const onRedirectCallback = (appState: AppState) => {
+  // Use Next.js's Router.replace method to replace the url
+  Router.replace(appState?.returnTo || '/');
+};
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement<AppProps> {
-  if (pageProps.urqlState) {
-    ssrCache.restoreData(pageProps.urqlState);
-  }
-  const { user } = pageProps;
-
   return (
     <>
       <GlobalStyles />
-      <UserProvider user={user}>
-        <Provider value={client}>
+      <Auth0Provider {...auth0Config} onRedirectCallback={onRedirectCallback}>
+        <UrqlProviders>
           <Component {...pageProps} />
-        </Provider>
-      </UserProvider>
+        </UrqlProviders>
+      </Auth0Provider>
     </>
   );
 }
