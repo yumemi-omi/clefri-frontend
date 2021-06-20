@@ -1,6 +1,16 @@
-import { FC } from 'react';
-import Button from '@/components/root/Button';
+import { VFC } from 'react';
 import { css } from '@emotion/react';
+import { useQuery, gql } from 'urql';
+import { useAuth0 } from '@auth0/auth0-react';
+
+const testQuery = gql`
+  query MyQuery {
+    user {
+      display_name
+      user_name
+    }
+  }
+`;
 
 const myStyle = css`
   color: hotpink;
@@ -8,17 +18,20 @@ const myStyle = css`
   font-weight: bold;
 `;
 
-const Home: FC = () => {
+const Home: VFC = () => {
+  const { loginWithRedirect, logout, user } = useAuth0();
+  const [result] = useQuery({
+    query: testQuery,
+  });
+  console.log({ result, user });
+
   return (
     <section css={myStyle}>
       <h1>サンプル</h1>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Assumenda
-        blanditiis consequatur eius hic ipsam nostrum omnis optio! Doloribus
-        quaerat quis ratione? At, maiores voluptas? Eveniet odio omnis
-        repellendus sapiente voluptatibus.
-      </p>
-      <Button>Lets Start!!</Button>
+      <button onClick={async () => await loginWithRedirect()}>Login</button>
+      <button onClick={() => logout({ returnTo: window.location.origin })}>
+        Logout
+      </button>
     </section>
   );
 };
