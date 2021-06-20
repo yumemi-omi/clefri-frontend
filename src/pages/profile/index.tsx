@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { VFC } from 'react';
 import { css } from '@emotion/react';
 import { useQuery, gql } from 'urql';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -12,7 +12,7 @@ const testQuery = gql`
   }
 `;
 
-const Profile: FC = () => {
+const Profile: VFC = () => {
   const { loginWithRedirect, logout, user } = useAuth0();
   const [result] = useQuery({
     query: testQuery,

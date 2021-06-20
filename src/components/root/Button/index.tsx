@@ -1,5 +1,5 @@
-import { FC } from 'react';
+import { VFC } from 'react';
 
-const Button: FC = () => <button className="btn-blue">ボタン</button>;
+const Button: VFC = () => <button className="btn-blue">ボタン</button>;
 
 export default Button;
