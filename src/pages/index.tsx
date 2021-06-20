@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { VFC } from 'react';
 import { css } from '@emotion/react';
 import { useQuery, gql } from 'urql';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -18,7 +18,7 @@ const myStyle = css`
   font-weight: bold;
 `;
 
-const Home: FC = () => {
+const Home: VFC = () => {
   const { loginWithRedirect, logout, user } = useAuth0();
   const [result] = useQuery({
     query: testQuery,
