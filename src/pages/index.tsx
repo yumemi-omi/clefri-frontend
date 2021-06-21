@@ -1,6 +1,5 @@
 import { VFC } from 'react';
 import { css } from '@emotion/react';
-import { useQuery, gql } from 'urql';
 import Link from 'next/link';
 
 const myStyle = css`
@@ -13,8 +12,8 @@ const Home: VFC = () => {
   return (
     <section css={myStyle}>
       <h1>サンプル</h1>
-      <button>Login</button>
-      <button>Logout</button>
+      <Link href="/api/auth/login">Login</Link>
+      <Link href="/api/auth/logout">Logout</Link>
       <Link href="/profile">プロフィールへ</Link>
     </section>
   );
