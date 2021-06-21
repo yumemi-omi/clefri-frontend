@@ -1,7 +1,10 @@
 import { VFC } from 'react';
-import { css } from '@emotion/react';
+// import { css } from '@emotion/react';
 import { useQuery, useMutation, gql } from 'urql';
-import { useAuth0 } from '@auth0/auth0-react';
+import Link from 'next/link';
+import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
+import auth0 from '@/lib/auth0';
+import { client, ssrCache } from '@/lib/urqlClient';
 
 const FetchUser = gql`
   query MyQuery($user_id: String!) {
@@ -36,7 +39,7 @@ const UpdateUser = gql`
 `;
 
 const Profile: VFC = () => {
-  const { loginWithRedirect, logout, user } = useAuth0();
+  const { user, isLoading } = useUser();
   const [result] = useQuery({
     query: FetchUser,
     variables: {
@@ -56,8 +59,13 @@ const Profile: VFC = () => {
     console.log('update', { result });
   };
 
-  if (!user || result.error || result.fetching || updateResult.fetching) {
-    console.log({ user, result, updateResult });
+  if (
+    !user ||
+    isLoading ||
+    result.error ||
+    result.fetching ||
+    updateResult.fetching
+  ) {
     return <div>Loading</div>;
   }
 
@@ -66,15 +74,15 @@ const Profile: VFC = () => {
     return (
       <div>
         <div> ログインしてください</div>
-        <button onClick={async () => await loginWithRedirect()}>
-          ログイン
-        </button>
+        <Link href="/api/auth/login">Login</Link>
       </div>
     );
   }
 
   return (
     <section>
+      プロフ
+      <Link href="/">ホームへ</Link>
       <h1>プロフィール</h1>
       <div>
         <div>id: {my.user_id}</div>
@@ -87,12 +95,38 @@ const Profile: VFC = () => {
           更新
         </button>
       </form>
-      <button onClick={async () => await loginWithRedirect()}>ログイン</button>
-      <button onClick={() => logout({ returnTo: window.location.origin })}>
-        ログアウト
-      </button>
+      <Link href="/api/auth/logout">Logout</Link>
     </section>
   );
 };
+
+export const getServerSideProps = withPageAuthRequired({
+  returnTo: '/',
+  async getServerSideProps({ req, res }) {
+    const session = auth0.getSession(req, res);
+    if (session) {
+      await client
+        .query(
+          FetchUser,
+          {
+            user_id: session.user.sub,
+          },
+          {
+            fetchOptions: () => {
+              return {
+                headers: {
+                  authorization: session.accessToken
+                    ? `Bearer ${session.accessToken}`
+                    : '',
+                },
+              };
+            },
+          }
+        )
+        .toPromise();
+    }
+    return { props: { urqlState: ssrCache.extractData() } };
+  },
+});
 
 export default Profile;
