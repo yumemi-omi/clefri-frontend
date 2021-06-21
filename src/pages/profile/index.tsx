@@ -38,7 +38,7 @@ const UpdateUser = gql`
   }
 `;
 
-const Profile: VFC = () => {
+const Profile: VFC = (props) => {
   const { user, isLoading } = useUser();
   const [result] = useQuery({
     query: FetchUser,
@@ -66,7 +66,7 @@ const Profile: VFC = () => {
     result.fetching ||
     updateResult.fetching
   ) {
-    return <div>Loading</div>;
+    return <pre>{JSON.stringify(props, null, 2)}</pre>;
   }
 
   const my = result.data && result.data.user && result.data.user[0];
@@ -81,7 +81,7 @@ const Profile: VFC = () => {
 
   return (
     <section>
-      プロフ
+      <pre>{JSON.stringify(props, null, 2)}</pre>
       <Link href="/">ホームへ</Link>
       <h1>プロフィール</h1>
       <div>
@@ -126,7 +126,7 @@ export const getServerSideProps = auth0.withPageAuthRequired({
         )
         .toPromise();
     }
-    return { props: { urqlState: ssrCache.extractData() } };
+    return { props: { urqlState: ssrCache.extractData(), ...session } };
   },
 });
 
