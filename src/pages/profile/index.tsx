@@ -104,6 +104,7 @@ export const getServerSideProps = withPageAuthRequired({
   returnTo: '/',
   async getServerSideProps({ req, res }) {
     const session = auth0.getSession(req, res);
+    console.log({ session });
     if (session) {
       await client
         .query(
