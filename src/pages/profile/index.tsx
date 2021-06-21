@@ -2,7 +2,7 @@ import { VFC } from 'react';
 // import { css } from '@emotion/react';
 import { useQuery, useMutation, gql } from 'urql';
 import Link from 'next/link';
-import { useUser, withPageAuthRequired } from '@auth0/nextjs-auth0';
+import { useUser } from '@auth0/nextjs-auth0';
 import auth0 from '@/lib/auth0';
 import { client, ssrCache } from '@/lib/urqlClient';
 
@@ -100,7 +100,7 @@ const Profile: VFC = () => {
   );
 };
 
-export const getServerSideProps = withPageAuthRequired({
+export const getServerSideProps = auth0.withPageAuthRequired({
   returnTo: '/',
   async getServerSideProps({ req, res }) {
     const session = auth0.getSession(req, res);
