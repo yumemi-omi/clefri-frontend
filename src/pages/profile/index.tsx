@@ -103,8 +103,10 @@ const Profile: VFC = (props) => {
 export const getServerSideProps = auth0.withPageAuthRequired({
   returnTo: '/',
   async getServerSideProps({ req, res }) {
+    const accessToken = await auth0.getAccessToken(req, res);
+
     const session = auth0.getSession(req, res);
-    console.log({ session });
+    console.log({});
     if (session) {
       await client
         .query(
@@ -126,7 +128,13 @@ export const getServerSideProps = auth0.withPageAuthRequired({
         )
         .toPromise();
     }
-    return { props: { urqlState: ssrCache.extractData(), ...session } };
+    return {
+      props: {
+        urqlState: ssrCache.extractData(),
+        ...session,
+        directAccessToken: accessToken,
+      },
+    };
   },
 });
 
