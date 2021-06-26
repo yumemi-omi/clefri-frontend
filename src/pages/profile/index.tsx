@@ -8,11 +8,15 @@ import { client, ssrCache } from '@/lib/urqlClient';
 
 const FetchUser = gql`
   query MyQuery($user_id: String!) {
-    user(where: { user_id: { _eq: $user_id } }) {
+    user_by_pk(user_id: $user_id) {
       user_id
       user_name
       display_name
       mail
+      user_status {
+        user_status_id
+        active
+      }
     }
   }
 `;
@@ -38,6 +42,17 @@ const UpdateUser = gql`
   }
 `;
 
+const UpdateUserStatus = gql`
+  mutation MyMutation($user_status_id: uuid = "") {
+    update_user_status_by_pk(
+      pk_columns: { user_status_id: $user_status_id }
+      _set: { active: false }
+    ) {
+      active
+    }
+  }
+`;
+
 const Profile: VFC = (props) => {
   const { user, isLoading } = useUser();
   const [result] = useQuery({
@@ -48,16 +63,7 @@ const Profile: VFC = (props) => {
     pause: !user,
   });
   const [updateResult, updateUser] = useMutation(UpdateUser);
-
-  const submit = async () => {
-    const variables = {
-      user_id: user?.sub,
-      display_name: 'test太郎',
-      mail: 'test mail',
-    };
-    const result = await updateUser(variables);
-    console.log('update', { result });
-  };
+  const [updateStatusResult, updateUserStatus] = useMutation(UpdateUserStatus);
 
   if (
     !user ||
@@ -69,12 +75,41 @@ const Profile: VFC = (props) => {
     return <pre>{JSON.stringify(props, null, 2)}</pre>;
   }
 
-  const my = result.data && result.data.user && result.data.user[0];
+  const my = result.data && result.data.user_by_pk;
   if (!my) {
     return (
       <div>
         <div> ログインしてください</div>
         <Link href="/api/auth/login">Login</Link>
+      </div>
+    );
+  }
+
+  const leaveApp = async () => {
+    const variables = {
+      user_status_id: my.user_status.user_status_id,
+    };
+    const result = await updateUserStatus(variables);
+    console.log('leaveApp', { result });
+  };
+
+  const submit = async () => {
+    const variables = {
+      user_id: user?.sub,
+      display_name: 'test太郎',
+      mail: 'test mail',
+    };
+    const result = await updateUser(variables);
+    console.log('submit', { result });
+  };
+
+  if (!my.user_status.active) {
+    return (
+      <div>
+        <div>退会しています</div>
+        <Link href="/api/auth/login">
+          再登録の際は、再度サインアップしてください
+        </Link>
       </div>
     );
   }
@@ -95,6 +130,7 @@ const Profile: VFC = (props) => {
           更新
         </button>
       </form>
+      <button onClick={leaveApp}>押すと退会</button>
       <Link href="/api/auth/logout">Logout</Link>
     </section>
   );
@@ -106,7 +142,6 @@ export const getServerSideProps = auth0.withPageAuthRequired({
     const accessToken = await auth0.getAccessToken(req, res);
 
     const session = auth0.getSession(req, res);
-    console.log({});
     if (session) {
       await client
         .query(
