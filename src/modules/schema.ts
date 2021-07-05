@@ -57,7 +57,7 @@ export const FetchUser = gql`
  */
 export const UpdateUser = gql`
   mutation UpdateUser(
-    $user_id: String = ""
+    $user_id: String!
     $display_name: String = ""
     $mail: String = ""
   ) {
@@ -80,7 +80,7 @@ export const UpdateUser = gql`
  * 退会
  */
 export const UpdateUserStatus = gql`
-  mutation UpdateUserStatus($user_status_id: uuid = "") {
+  mutation UpdateUserStatus($user_status_id: uuid!) {
     update_user_status_by_pk(
       pk_columns: { user_status_id: $user_status_id }
       _set: { active: false }
@@ -94,10 +94,10 @@ export const UpdateUserStatus = gql`
  * 食材新規作成
  */
 export const AddFoodstuff = gql`
-  mutation MyMutation(
+  mutation AddFoodstuff(
     $foodstuff_name: String
     $quantity: Int = 0
-    $box_id: uuid
+    $box_id: uuid!
   ) {
     insert_foodstuff(
       objects: {
@@ -121,7 +121,7 @@ export const AddFoodstuff = gql`
  * 食材ボックス取得
  */
 export const FetchBoxes = gql`
-  query MyQuery($_eq: String!) {
+  query FetchBoxes($_eq: String!) {
     box(where: { created_by: { _eq: $_eq } }) {
       box_id
       box_name
@@ -138,7 +138,7 @@ export const FetchBoxes = gql`
  * 食材個数更新
  */
 export const UpdateFoodstuffQuantity = gql`
-  mutation UpdateFoodstuffQuantity($foodstuff_id: uuid!, $quantity: Int = 0) {
+  mutation UpdateFoodstuffQuantity($foodstuff_id: uuid!, $quantity: Int!) {
     update_foodstuff_by_pk(
       pk_columns: { foodstuff_id: $foodstuff_id }
       _inc: { quantity: $quantity }
@@ -153,7 +153,7 @@ export const UpdateFoodstuffQuantity = gql`
  * 食材情報更新
  */
 export const UpdateFoodstuff = gql`
-  mutation MyMutation(
+  mutation UpdateFoodstuff(
     $foodstuff_id: uuid!
     $quantity: Int
     $foodstuff_name: String
