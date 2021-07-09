@@ -1,0 +1,22 @@
+watch: true
+schema:
+  - "schema.graphql"
+documents:
+  - "./src/**/*.tsx"
+  - "./src/**/*.ts"
+overwrite: true
+generates:
+  "./src/generated/graphql.ts":
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-urql
+    config:
+      namingConvention:
+        enumValues: pascal-case#pascalCase
+        transformUnderscore: true
+      scalars:
+        uuid: string
+  "./graphql.schema.json":
+    plugins:
+      - introspection
