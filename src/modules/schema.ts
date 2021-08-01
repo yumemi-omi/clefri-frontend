@@ -1,8 +1,8 @@
 import { gql } from 'urql';
 
 // auth0のactionで作成してるので不要
-export const CrateFisrtData = gql`
-  mutation CrateFisrtData(
+export const CreateFisrtData = gql`
+  mutation CreateFisrtData(
     $user_id: String = "test"
     $space_name: String = "テストスペース"
     $data: [box_insert_input!] = [
