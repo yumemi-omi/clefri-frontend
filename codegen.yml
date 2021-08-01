@@ -2,8 +2,8 @@ watch: true
 schema:
   - "schema.graphql"
 documents:
-  - "./src/**/*.tsx"
-  - "./src/**/*.ts"
+  - "./src/**/!(*.d).{ts,tsx}"
+  - "./src/**/*.gql"
 overwrite: true
 generates:
   "./src/generated/graphql.ts":
