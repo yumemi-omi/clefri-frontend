@@ -1,0 +1,41 @@
+query FetchUser($user_id: String!) {
+  user_by_pk(user_id: $user_id) {
+    user_id
+    user_name
+    display_name
+    mail
+    user_status {
+      user_status_id
+      active
+    }
+  }
+}
+
+query FetchSpace($_eq: String) {
+  space(where: {created_by: {_eq: $_eq}}) {
+    space_id
+  }
+}
+
+query FetchSpaceOwners($_eq: uuid) {
+  space_owner(where: {space_id: {_eq: $_eq}}) {
+    space_id
+    user {
+      display_name
+      id
+    }
+  }
+}
+
+
+query FetchBoxes($_eq: String!) {
+  box(where: { created_by: { _eq: $_eq } }) {
+    box_id
+    box_name
+    foodstuffs {
+      foodstuff_id
+      foodstuff_name
+      quantity
+    }
+  }
+}

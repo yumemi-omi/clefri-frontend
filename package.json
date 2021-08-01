@@ -8,7 +8,9 @@
     "start": "next start",
     "export": "next export",
     "lint:old": "eslint src --fix",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate:type": "graphql-codegen --config codegen.yml",
+    "generate:schema": "source .env.local && get-graphql-schema ${HASURA_API_ENDPOINT}  --header=X-Hasura-Admin-Secret=${HASURA_ADMIN_SECRET} > schema.graphql"
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.5.0",
@@ -28,10 +30,16 @@
   "devDependencies": {
     "@emotion/babel-plugin": "11.3.0",
     "@emotion/eslint-plugin": "11.2.0",
+    "@graphql-codegen/cli": "^1.21.6",
+    "@graphql-codegen/introspection": "^1.18.2",
+    "@graphql-codegen/typescript": "^1.22.4",
+    "@graphql-codegen/typescript-operations": "^1.18.3",
+    "@graphql-codegen/typescript-urql": "^2.0.10",
     "@types/node": "14.17.4",
     "@types/react": "17.0.14",
     "@typescript-eslint/eslint-plugin": "4.28.0",
     "@typescript-eslint/parser": "4.28.0",
+    "dotenv": "^8.6.0",
     "eslint": "7.30.0",
     "eslint-config-next": "11.0.1",
     "eslint-config-prettier": "8.3.0",
@@ -40,6 +48,7 @@
     "eslint-plugin-prettier": "3.4.0",
     "eslint-plugin-react": "7.24.0",
     "eslint-plugin-react-hooks": "4.2.0",
+    "get-graphql-schema": "^2.1.2",
     "npm-check-updates": "11.8.2",
     "prettier": "2.3.2",
     "typescript": "4.3.5"

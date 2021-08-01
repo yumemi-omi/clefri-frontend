@@ -19,6 +19,16 @@ const requestAccessToken = async (): Promise<string> => {
   if (res.ok) {
     const json = await res.json();
 
+    const result = await fetch(
+      'https://dhase0awdk.execute-api.ap-northeast-1.amazonaws.com/dev/',
+      {
+        headers: {
+          authorization: `Bearer ${json.accessToken}`,
+        },
+      }
+    );
+    console.log({ resultJson: result.json(), token: json.accessToken });
+
     return json.accessToken;
   } else {
     return 'public';

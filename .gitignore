@@ -25,12 +25,14 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.dev.env
-.local.env
-.prod.env
-.env.dev
+.env
 .env.local
-.env.prod
+.env.development.local
+.env.test.local
+.env.production.local
 
 # vercel
 .vercel
+
+generated/graphql.ts
+graphql.schema.json
