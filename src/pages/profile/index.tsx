@@ -1,59 +1,30 @@
-import { VFC } from 'react';
+import { VFC, useEffect } from 'react';
 // import { css } from '@emotion/react';
-import { useQuery, useMutation, gql } from 'urql';
+import { useQuery, useMutation } from 'urql';
 import Link from 'next/link';
 import { useUser } from '@auth0/nextjs-auth0';
 import auth0 from '@/lib/auth0';
 import { client, ssrCache } from '@/lib/urqlClient';
-
-const FetchUser = gql`
-  query MyQuery($user_id: String!) {
-    user_by_pk(user_id: $user_id) {
-      user_id
-      user_name
-      display_name
-      mail
-      user_status {
-        user_status_id
-        active
-      }
-    }
-  }
-`;
-
-const UpdateUser = gql`
-  mutation MyMutation(
-    $user_id: String = ""
-    $display_name: String = ""
-    $mail: String = ""
-  ) {
-    update_user(
-      where: { user_id: { _eq: $user_id } }
-      _set: { mail: $mail, display_name: $display_name }
-    ) {
-      affected_rows
-      returning {
-        user_id
-        user_name
-        display_name
-        mail
-      }
-    }
-  }
-`;
-
-const UpdateUserStatus = gql`
-  mutation MyMutation($user_status_id: uuid = "") {
-    update_user_status_by_pk(
-      pk_columns: { user_status_id: $user_status_id }
-      _set: { active: false }
-    ) {
-      active
-    }
-  }
-`;
+import {
+  AddFoodstuff,
+  FetchUser,
+  UpdateUser,
+  UpdateUserStatus,
+  FetchBoxes,
+} from '@/modules/schema';
+import useFoodstuff from '@/modules/useFoodstuff';
 
 const Profile: VFC = (props) => {
+  useEffect(() => {
+    const fireLambdaFunc = async () => {
+      const result = await fetch(
+        'https://dhase0awdk.execute-api.ap-northeast-1.amazonaws.com/dev/'
+      );
+      console.log({ resultJson: result.json() });
+    };
+    fireLambdaFunc();
+  }, []);
+
   const { user, isLoading } = useUser();
   const [result] = useQuery({
     query: FetchUser,
@@ -62,8 +33,16 @@ const Profile: VFC = (props) => {
     },
     pause: !user,
   });
+  const [fetchBoxesResult] = useQuery({
+    query: FetchBoxes,
+    variables: {
+      _eq: user?.sub,
+    },
+    pause: !user,
+  });
   const [updateResult, updateUser] = useMutation(UpdateUser);
   const [updateStatusResult, updateUserStatus] = useMutation(UpdateUserStatus);
+  const [addFoodstuffResult, addFoodstuff] = useMutation(AddFoodstuff);
 
   if (
     !user ||
@@ -103,6 +82,16 @@ const Profile: VFC = (props) => {
     console.log('submit', { result });
   };
 
+  const onAddFoodstuff = async () => {
+    const variables = {
+      foodstuff_name: 'テスト食材',
+      quantity: 2,
+      box_id: '6e7fb97e-9732-43b9-bee6-dda4def17e21',
+    };
+    const result = await addFoodstuff(variables);
+    console.log('onAddFoodstuff', { result });
+  };
+
   if (!my.user_status.active) {
     return (
       <div>
@@ -116,7 +105,7 @@ const Profile: VFC = (props) => {
 
   return (
     <section>
-      <pre>{JSON.stringify(props, null, 2)}</pre>
+      <pre>{JSON.stringify(fetchBoxesResult.data, null, 2)}</pre>
       <Link href="/">ホームへ</Link>
       <h1>プロフィール</h1>
       <div>
@@ -130,8 +119,15 @@ const Profile: VFC = (props) => {
           更新
         </button>
       </form>
-      <button onClick={leaveApp}>押すと退会</button>
-      <Link href="/api/auth/logout">Logout</Link>
+      <div>
+        <button onClick={leaveApp}>押すと退会</button>
+      </div>
+      <div>
+        <button onClick={onAddFoodstuff}>押すと食材追加</button>
+      </div>
+      <div>
+        <Link href="/api/auth/logout">Logout</Link>
+      </div>
     </section>
   );
 };
