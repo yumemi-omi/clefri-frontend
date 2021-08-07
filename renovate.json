@@ -1,10 +1,14 @@
 {
-  "baseBranches": ["develop"],
-  "schedule": "every weekend",
-  "minor": {
-    "groupName": "all dependencies"
-  },
   "extends": [
     "config:base"
+  ],
+  "baseBranches": ["develop"],
+  "timezone": "Asia/Tokyo",
+  "schedule": "every weekend",
+  "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true
+    }
   ]
 }
