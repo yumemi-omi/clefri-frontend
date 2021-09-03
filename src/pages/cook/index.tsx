@@ -1,9 +1,34 @@
-import { withPageAuthRequired } from '@auth0/nextjs-auth0';
+import {
+  withPageAuthRequired,
+  WithPageAuthRequiredProps,
+} from '@auth0/nextjs-auth0';
+import { Form } from 'react-final-form';
+import FileField from '@/components/common/FileField';
+import { useFileUploader, FieldNameType } from '@/hooks/useFileUploader';
 
-const Cook = withPageAuthRequired(
-  ({ user }) => {
-    console.log({ user });
-    return <div>cooking mode</div>;
+interface CookProps extends WithPageAuthRequiredProps {
+  fieldName: FieldNameType;
+}
+
+const Cook = withPageAuthRequired<CookProps>(
+  () => {
+    const { onSubmit } = useFileUploader('foodstuff');
+    return (
+      <div>
+        <Form
+          onSubmit={onSubmit}
+          render={({ handleSubmit }) => (
+            <form
+              encType="application/x-www-form-urlencoded"
+              onSubmit={handleSubmit}
+            >
+              <FileField name="foodstuff" />
+              <button type="submit">Submit</button>
+            </form>
+          )}
+        />
+      </div>
+    );
   },
   {
     onError: function error(error) {
