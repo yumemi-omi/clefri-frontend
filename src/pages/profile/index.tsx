@@ -2,9 +2,6 @@ import { VFC, useEffect } from 'react';
 // import { css } from '@emotion/react';
 import { useQuery, useMutation } from 'urql';
 import Link from 'next/link';
-import { useUser } from '@auth0/nextjs-auth0';
-import auth0 from '@/lib/auth0';
-import { client, ssrCache } from '@/lib/urqlClient';
 import {
   AddFoodstuff,
   FetchUser,
@@ -12,7 +9,7 @@ import {
   UpdateUserStatus,
   FetchBoxes,
 } from '@/modules/schema';
-import useFoodstuff from '@/modules/useFoodstuff';
+import { useSession } from 'next-auth/react'
 
 const Profile: VFC = (props) => {
   useEffect(() => {
@@ -22,31 +19,32 @@ const Profile: VFC = (props) => {
       );
       console.log({ resultJson: result.json() });
     };
-    fireLambdaFunc();
+    // fireLambdaFunc();
   }, []);
 
-  const { user, isLoading } = useUser();
+  const { data, status } = useSession();
+  const userId = data?.user.id
   const [result] = useQuery({
     query: FetchUser,
     variables: {
-      user_id: user?.sub,
+      user_id: userId,
     },
-    pause: !user,
+    pause: !data?.user,
   });
   const [fetchBoxesResult] = useQuery({
     query: FetchBoxes,
     variables: {
-      _eq: user?.sub,
+      _eq: userId,
     },
-    pause: !user,
+    pause: !data?.user,
   });
   const [updateResult, updateUser] = useMutation(UpdateUser);
   const [updateStatusResult, updateUserStatus] = useMutation(UpdateUserStatus);
   const [addFoodstuffResult, addFoodstuff] = useMutation(AddFoodstuff);
 
   if (
-    !user ||
-    isLoading ||
+    !data?.user ||
+    status === 'loading' ||
     result.error ||
     result.fetching ||
     updateResult.fetching
@@ -55,7 +53,7 @@ const Profile: VFC = (props) => {
   }
 
   const my = result.data && result.data.user_by_pk;
-  if (!my) {
+  if (!my || status === "unauthenticated") {
     return (
       <div>
         <div> ログインしてください</div>
@@ -74,7 +72,7 @@ const Profile: VFC = (props) => {
 
   const submit = async () => {
     const variables = {
-      user_id: user?.sub,
+      user_id: userId,
       display_name: 'test太郎',
       mail: 'test mail',
     };
@@ -132,41 +130,41 @@ const Profile: VFC = (props) => {
   );
 };
 
-export const getServerSideProps = auth0.withPageAuthRequired({
-  returnTo: '/',
-  async getServerSideProps({ req, res }) {
-    const accessToken = await auth0.getAccessToken(req, res);
+// export const getServerSideProps = auth0.withPageAuthRequired({
+//   returnTo: '/',
+//   async getServerSideProps({ req, res }) {
+//     const accessToken = await auth0.getAccessToken(req, res);
 
-    const session = auth0.getSession(req, res);
-    if (session) {
-      await client
-        .query(
-          FetchUser,
-          {
-            user_id: session.user.sub,
-          },
-          {
-            fetchOptions: () => {
-              return {
-                headers: {
-                  authorization: session.accessToken
-                    ? `Bearer ${session.accessToken}`
-                    : '',
-                },
-              };
-            },
-          }
-        )
-        .toPromise();
-    }
-    return {
-      props: {
-        urqlState: ssrCache.extractData(),
-        ...session,
-        directAccessToken: accessToken,
-      },
-    };
-  },
-});
+//     const session = auth0.getSession(req, res);
+//     if (session) {
+//       await client
+//         .query(
+//           FetchUser,
+//           {
+//             user_id: session.user.sub,
+//           },
+//           {
+//             fetchOptions: () => {
+//               return {
+//                 headers: {
+//                   authorization: session.accessToken
+//                     ? `Bearer ${session.accessToken}`
+//                     : '',
+//                 },
+//               };
+//             },
+//           }
+//         )
+//         .toPromise();
+//     }
+//     return {
+//       props: {
+//         urqlState: ssrCache.extractData(),
+//         ...session,
+//         directAccessToken: accessToken,
+//       },
+//     };
+//   },
+// });
 
 export default Profile;
