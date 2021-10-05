@@ -1,5 +1,5 @@
-import NextAuth from "next-auth"
-import Auth0Provider from "next-auth/providers/auth0"
+import NextAuth from 'next-auth';
+import Auth0Provider from 'next-auth/providers/auth0';
 // import jwt from 'jsonwebtoken'
 
 export default NextAuth({
@@ -7,13 +7,13 @@ export default NextAuth({
   providers: [
     Auth0Provider({
       issuer: process.env.AUTH0_ISSUER_BASE_URL,
-      clientId: process.env.AUTH0_CLIENT_ID || "",
-      clientSecret: process.env.AUTH0_CLIENT_SECRET || "",
+      clientId: process.env.AUTH0_CLIENT_ID || '',
+      clientSecret: process.env.AUTH0_CLIENT_SECRET || '',
       authorization: {
         params: {
-          audience: process.env.AUTH0_AUDIENCE
-        }
-      }
+          audience: process.env.AUTH0_AUDIENCE,
+        },
+      },
       // `https://${process.env.AUTH0_DOMAIN}/authorize?response_type=code&audience=${process.env.AUTH0_AUDIENCE}`
     }),
   ],
@@ -54,26 +54,26 @@ export default NextAuth({
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
     async session({ session, token, user }) {
-      console.log({セッション: session, user, token})
+      console.log({ セッション: session, user, token });
       // const encodedToken = jwt.sign(token, process.env.SECRET, { algorithm: 'RS512'});
-      const accessToken = ''
+      const accessToken = '';
       return Promise.resolve({
         ...session,
         accessToken: token.access_token,
         user: {
           ...session.user,
-          id: token.sub?.toString()
-        }
+          id: token.sub?.toString(),
+        },
       });
     },
     async jwt({ token, account, user, profile }) {
-      console.log({ジョット: token, account, user, profile})
+      console.log({ ジョット: token, account, user, profile });
       if (account) {
-        token.access_token = account.access_token
+        token.access_token = account.access_token;
       }
-      return token
-    }
+      return token;
+    },
   },
   theme: 'auto',
-  debug: true
-})
+  debug: true,
+});

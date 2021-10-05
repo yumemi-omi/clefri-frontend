@@ -9,7 +9,7 @@ import {
   UpdateUserStatus,
   FetchBoxes,
 } from '@/modules/schema';
-import { useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react';
 
 const Profile: VFC = (props) => {
   useEffect(() => {
@@ -23,7 +23,7 @@ const Profile: VFC = (props) => {
   }, []);
 
   const { data, status } = useSession();
-  const userId = data?.user.id
+  const userId = data?.user.id;
   const [result] = useQuery({
     query: FetchUser,
     variables: {
@@ -53,7 +53,7 @@ const Profile: VFC = (props) => {
   }
 
   const my = result.data && result.data.user_by_pk;
-  if (!my || status === "unauthenticated") {
+  if (!my || status === 'unauthenticated') {
     return (
       <div>
         <div> ログインしてください</div>

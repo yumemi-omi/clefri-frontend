@@ -1,7 +1,7 @@
 import { VFC } from 'react';
 import { css } from '@emotion/react';
 import Link from 'next/link';
-import { signIn, signOut, useSession } from 'next-auth/react'
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const myStyle = css`
   color: hotpink;
@@ -10,9 +10,9 @@ const myStyle = css`
 `;
 
 const Home: VFC = (props) => {
-  const { data } = useSession()
+  const { data } = useSession();
 
-  console.log({data, props})
+  console.log({ data, props });
   return (
     <section css={myStyle}>
       <h1>サンプル</h1>

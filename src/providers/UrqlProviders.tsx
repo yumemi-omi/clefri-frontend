@@ -7,7 +7,7 @@ type UrqlProviderProps = {
 };
 
 const UrqlProvider: VFC<UrqlProviderProps> = ({ children }) => {
-  const client  = useUrqlClient()
+  const client = useUrqlClient();
   return <Provider value={client}>{children}</Provider>;
 };
 

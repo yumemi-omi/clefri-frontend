@@ -24,7 +24,7 @@ const useClient = (options?: RequestInit) => {
 
   return React.useMemo(() => {
     const client = createClient({
-      url: process.env.HASURA_API_ENDPOINT || "",
+      url: process.env.HASURA_API_ENDPOINT || '',
       fetchOptions: () => {
         return {
           headers: {
