@@ -16,7 +16,13 @@ const Home: VFC = (props) => {
   return (
     <section css={myStyle}>
       <h1>サンプル</h1>
-      <button onClick={() => signIn()}>Sign in</button>
+      <button
+        onClick={() =>
+          signIn('auth0', { callbackUrl: 'http://localhost:3000/' })
+        }
+      >
+        Sign in
+      </button>
       <button onClick={() => signOut()}>Sign out</button>
       <Link href="/api/auth/login">Login</Link>
       <Link href="/api/auth/logout">Logout</Link>
