@@ -75,5 +75,8 @@ export default NextAuth({
     },
   },
   theme: 'auto',
+  pages: {
+    signIn: '/auth/signin',
+  },
   debug: true,
 });
