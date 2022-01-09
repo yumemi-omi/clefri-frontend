@@ -13,14 +13,13 @@
     "generate:schema": "source .env.local && get-graphql-schema ${HASURA_API_ENDPOINT}  --header=X-Hasura-Admin-Secret=${HASURA_ADMIN_SECRET} > schema.graphql"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^1.5.0",
-    "@auth0/nextjs-auth0": "^1.4.0",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
     "@urql/devtools": "^2.0.3",
     "@urql/exchange-auth": "^0.1.3",
     "graphql": "^15.5.0",
     "next": "^11.0.0",
+    "next-auth": "^4.0.0-beta.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "ress": "^4.0.0",

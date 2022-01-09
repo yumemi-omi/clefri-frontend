@@ -14,5 +14,6 @@ module.exports = {
     // SESSION_COOKIE_LIFETIME: 7200, // 2 hours
     API_DOMAIN: process.env.API_DOMAIN,
     API_ROUTE: process.env.API_ROUTE,
+    HASURA_API_ENDPOINT: process.env.HASURA_API_ENDPOINT,
   },
 }
