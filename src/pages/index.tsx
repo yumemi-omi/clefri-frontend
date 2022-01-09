@@ -24,8 +24,6 @@ const Home: VFC = (props) => {
         Sign in
       </button>
       <button onClick={() => signOut()}>Sign out</button>
-      <Link href="/api/auth/login">Login</Link>
-      <Link href="/api/auth/logout">Logout</Link>
       <Link href="/profile">プロフィールへ</Link>
     </section>
   );
