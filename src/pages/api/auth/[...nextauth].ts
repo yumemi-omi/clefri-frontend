@@ -18,7 +18,7 @@ export default NextAuth({
     }),
   ],
   session: {
-    jwt: true,
+    strategy: 'jwt',
   },
   // https://next-auth.js.org/configuration/options#jwt
   jwt: {
@@ -74,7 +74,6 @@ export default NextAuth({
       return token;
     },
   },
-  theme: 'auto',
   pages: {
     signIn: '/auth/signin',
   },
