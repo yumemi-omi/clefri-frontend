@@ -10,6 +10,7 @@ import {
   FetchBoxes,
 } from '@/modules/schema';
 import { useSession } from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 
 const Profile: VFC = (props) => {
   useEffect(() => {
@@ -124,7 +125,7 @@ const Profile: VFC = (props) => {
         <button onClick={onAddFoodstuff}>押すと食材追加</button>
       </div>
       <div>
-        <Link href="/api/auth/logout">Logout</Link>
+        <button onClick={() => signOut()}>Sign out</button>
       </div>
     </section>
   );
