@@ -28,7 +28,7 @@
   "license": "MIT",
   "devDependencies": {
     "@emotion/babel-plugin": "11.10.0",
-    "@emotion/eslint-plugin": "11.7.0",
+    "@emotion/eslint-plugin": "11.10.0",
     "@graphql-codegen/cli": "2.11.3",
     "@graphql-codegen/introspection": "2.2.0",
     "@graphql-codegen/typescript": "2.7.2",
